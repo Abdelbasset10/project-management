@@ -40,7 +40,7 @@ model Task {
   status TaskSTATUS @default(NOT_STARTED)
 
   project_id Int
-  project    Project @relation("project has many tasks", fields: [project_id], references: [id])
+  project    Project @relation("project has many tasks", fields: [project_id], references: [id],onDelete: Cascade)
 
   created_at DateTime @default(now())
 }

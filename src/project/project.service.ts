@@ -22,20 +22,53 @@ export class ProjectService {
                             }))
                         })
                     }
+                },
+                include: {
+                    tasks: true
                 }
             });
 
-            return { message: "Project has been created succesffully", data: new_project };
+            const projects = await this.prisma.project.findMany({
+                include: {
+                    tasks: true
+                }
+            });
+
+            let formatted_projects = [];
+
+            for (const project of projects) {
+                const finished_tasks = project.tasks.filter((task) => task.status === "FINISHED").length;
+                const in_progress_tasks = project.tasks.filter((task) => task.status === "IN_PROGRESS").length;
+                const not_started_tasks_tasks = project.tasks.filter((task) => task.status === "NOT_STARTED").length;
+                formatted_projects.push({ ...project, finished_tasks, in_progress_tasks, not_started_tasks_tasks })
+            }
+
+            return { message: "Project has been created succesffully", data: formatted_projects };
         } catch (error) {
+            console.log(error)
+            console.log(error)
             throw new InternalServerErrorException("Something went wrong");
         }
     }
 
     async getAllProjects() {
         try {
-            const projects = await this.prisma.project.findMany({});
+            const projects = await this.prisma.project.findMany({
+                include: {
+                    tasks: true
+                }
+            });
 
-            return { message: "All projects", data: projects };
+            let formatted_projects = [];
+
+            for (const project of projects) {
+                const finished_tasks = project.tasks.filter((task) => task.status === "FINISHED").length;
+                const in_progress_tasks = project.tasks.filter((task) => task.status === "IN_PROGRESS").length;
+                const not_started_tasks_tasks = project.tasks.filter((task) => task.status === "NOT_STARTED").length;
+                formatted_projects.push({ ...project, finished_tasks, in_progress_tasks, not_started_tasks_tasks })
+            }
+
+            return { message: "All projects", data: formatted_projects };
         } catch (error) {
             throw new InternalServerErrorException("Something went wrong");
         }
@@ -43,9 +76,13 @@ export class ProjectService {
 
     async getProjectDetails(id: number) {
         try {
+            console.log(id)
             const project = await this.prisma.project.findUnique({
                 where: {
                     id
+                },
+                include: {
+                    tasks: true
                 }
             });
 
@@ -65,6 +102,7 @@ export class ProjectService {
 
     async updateProject(id: number, bodyData: StoreDTO) {
         try {
+            console.log("asfdasf")
             const { name, tasks: bodyTasks } = bodyData;
             const project = await this.prisma.project.findUnique({
                 where: {
@@ -138,14 +176,24 @@ export class ProjectService {
                 }
             });
 
-            const updated_project = await this.prisma.project.findUnique({
-                where: {
-                    id
+            const projects = await this.prisma.project.findMany({
+                include: {
+                    tasks: true
                 }
             });
 
-            return { message: "Project has been updated succesfully", data: updated_project };
+            let formatted_projects = [];
+
+            for (const project of projects) {
+                const finished_tasks = project.tasks.filter((task) => task.status === "FINISHED").length;
+                const in_progress_tasks = project.tasks.filter((task) => task.status === "IN_PROGRESS").length;
+                const not_started_tasks_tasks = project.tasks.filter((task) => task.status === "NOT_STARTED").length;
+                formatted_projects.push({ ...project, finished_tasks, in_progress_tasks, not_started_tasks_tasks })
+            }
+
+            return { message: "All projects", data: formatted_projects };
         } catch (error) {
+            console.log(error)
             if (error instanceof BadRequestException) {
                 throw error;
             }
@@ -174,9 +222,25 @@ export class ProjectService {
                 }
             });
 
-            return { message: "Project has been deleted succesfully" };
+            const projects = await this.prisma.project.findMany({
+                include: {
+                    tasks: true
+                }
+            });
+
+            let formatted_projects = [];
+
+            for (const project of projects) {
+                const finished_tasks = project.tasks.filter((task) => task.status === "FINISHED").length;
+                const in_progress_tasks = project.tasks.filter((task) => task.status === "IN_PROGRESS").length;
+                const not_started_tasks_tasks = project.tasks.filter((task) => task.status === "NOT_STARTED").length;
+                formatted_projects.push({ ...project, finished_tasks, in_progress_tasks, not_started_tasks_tasks })
+            }
+
+            return { message: "Project has been deleted succesffully", data: formatted_projects };
 
         } catch (error) {
+            console.log(error)
             if (error instanceof BadRequestException) {
                 throw error;
             }

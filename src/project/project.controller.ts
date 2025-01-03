@@ -18,16 +18,17 @@ export class ProjectController {
 
     @Get(":id")
     getProjectDetails(@Param() id: { id: string }) {
-        return this.service.getProjectDetails(Number(id));
+        console.log(id)
+        return this.service.getProjectDetails(Number(id.id));
     }
 
     @Patch(":id")
     updateProject(@Param() id: { id: string }, @Body() bodyData: StoreDTO) {
-        return this.service.updateProject(Number(id), bodyData);
+        return this.service.updateProject(Number(id.id), bodyData);
     }
 
-    @Delete("id")
+    @Delete(":id")
     deleteProject(@Param() id: { id: string }) {
-        return this.service.deleteProject(Number(id));
+        return this.service.deleteProject(Number(id.id));
     }
 }
